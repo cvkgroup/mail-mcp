@@ -1,0 +1,30 @@
+{
+  "name": "mail-mcp",
+  "version": "0.1.0",
+  "description": "An MCP server that enables hierarchical agent structures to communicate reliably without consuming context or forgetting the rules of their protocol.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://localhost:26831/cvkgroup/mail-mcp"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}
