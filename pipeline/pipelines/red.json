@@ -1,0 +1,7 @@
+{
+  "_what": "The red phase as a one-station pipeline: write one failing test per acceptance criterion. Kept as the simplest possible pipeline, and as the thing longer flows are built from.",
+  "start": "red",
+  "stations": {
+    "red": {"pass": "red", "on_pass": null, "on_fail": {"to": "red", "max_attempts": 2}}
+  }
+}

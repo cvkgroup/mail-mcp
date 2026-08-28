@@ -1,0 +1,5 @@
+{
+  "_what": "Two nodes in a chain, so the second is handed the first's result and the engine has to carry a reference across a dependency as well as across a station.",
+  "first": [],
+  "second": ["first"]
+}

@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+"""Run the red phase wave by wave, spawning every subagent directly.
+
+Ruled by the lead 2026-08-16: keep the wave model, but no parent agent. Every failure on the
+first night came from the parent layer — it went idle the instant it dispatched and looked
+finished, it invented a different child-naming scheme on each run, and its children read one
+another's files. Spawning directly removes all three: each agent gets a clean context, one brief,
+one file, and a name chosen here rather than invented.
+
+The job of this script is to dispatch and to keep time. It does NOT inspect the tests. All
+checking happens after wave 16, per the lead.
+
+Usage:  python3 scripts/run-waves.py [first-wave] [last-wave]
+"""
+import atexit, json, pathlib, re, signal, subprocess, sys, time
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+GRAPH = json.loads((ROOT / "scripts" / "waves.json").read_text())
+LOG = ROOT / "briefs" / "run-log.tsv"
+# --no-session: do not store this agent's session.
+#
+# 2026-08-16, after six aborted runs: prime-agent stores every session and the daemon restores
+# ALL of them when it restarts. `shutdown --force` stops the services but does NOT kill the
+# underlying OS processes — 92 of them were still alive and still working after a shutdown that
+# reported success. Resurrected agents resumed jobs from earlier attempts, wrote files for waves
+# that had not run, and rewrote a completed wave's token 170s after it finished.
+#
+# Not storing the session is what makes an agent unresurrectable. The cost is that there is no
+# transcript to read afterwards; the test file and the token are the record instead.
+MODEL = ["--no-session", "--provider", "openrouter",
+         "--model", "deepseek/deepseek-v4-flash-0731"]
+# Agents this run must never touch. As of 2026-08-16 the host is ours alone — weeks 5 and 6 are
+# finished and nova/vera are gone — but prereview agents are left as a guard, and the list is the
+# one place to add a name if that changes again.
+FOREIGN = re.compile(r"^(nova|vera|prereview)")
+
+
+def agents():
+    """name -> (id, status) for every agent that is not another architect's."""
+    out = subprocess.run(["prime-agent", "list"], capture_output=True, text=True).stdout
+    rows = {}
+    for line in out.splitlines()[1:]:
+        f = line.split()
+        if len(f) < 3:
+            continue
+        name, aid, status = (f[0], f[1], f[2]) if not re.fullmatch(r"[a-f0-9]{12}", f[0]) else ("", f[0], f[1])
+        if FOREIGN.match(name):
+            continue
+        rows[name or aid] = (aid, status)
+    return rows
+
+
+def spawn(req):
+    """Launch one agent for one requirement. Fire and forget.
+
+    No rename, and therefore no waiting for the daemon to register the session. The lead's point,
+    2026-08-16: the completion token is named for its requirement, so the token identifies the work
+    and the agent does not need to. Renaming was the only reason spawns were serialised, and it
+    cost a minute on a five-requirement wave and nearly two on a nine.
+    """
+    brief = ROOT / "briefs" / f"req-{req}-red.md"
+    task = (
+        f"Read {brief} and follow it exactly. It is the complete and only instruction — "
+        f"everything you need is in it, including your requirement in full. Do not open any "
+        f"other document. Do not read any other test file. Write your one file, make its tests "
+        f"fail for the right reason, then report."
+    )
+    subprocess.Popen(
+        ["script", "-q", "/dev/null", "prime-agent", *MODEL, "--cwd", str(ROOT), task],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+    )
+
+
+def busy():
+    return any(s == "working" for n, (i, s) in agents().items() if n.startswith("red-"))
+
+
+def kill_everything():
+    """Kill prime-agent at the OS level.
+
+    `prime-agent stop` and `shutdown --force` both report success and leave the processes running.
+    The host is ours alone (confirmed by the lead 2026-08-16), so this is the only cleanup that
+    has actually worked.
+    """
+    subprocess.run(["pkill", "-f", "prime-agent"], capture_output=True)
+    subprocess.run(["pkill", "-f", "ipykernel_launcher"], capture_output=True)
+
+
+def stop_mine():
+    """Stop every agent this run started.
+
+    Killing this script does NOT stop the agents it spawned — they live in the prime-agent
+    daemon, not in this process. On the first night five restarts left their agents running and
+    31 accumulated, the daemon began refusing connections, and load hit 5.4 on a machine that
+    should have been running five agents. So this is registered with atexit and on the usual
+    signals, and its errors are printed rather than swallowed: the silent failure of `stop` is
+    what hid the leak.
+    """
+    for name, (aid, _) in agents().items():
+        r = subprocess.run(["prime-agent", "stop", aid], capture_output=True, text=True)
+        if r.returncode != 0:
+            print(f"  !! could not stop {name or aid}: {r.stderr.strip()[:120]}", flush=True)
+
+
+def daemon_up() -> bool:
+    """Is the prime-agent daemon answering?
+
+    After `shutdown --force` the socket is gone and does not come back on its own. It respawns
+    only when an agent starts — so launching a whole wave at once into a dead socket has every
+    agent racing to start the same daemon, and none of them survives. That happened at 00:32 on
+    2026-08-16: five agents launched, nothing ran, no tokens, no files.
+    """
+    r = subprocess.run(["prime-agent", "list"], capture_output=True, text=True)
+    return r.returncode == 0 and "Failed to connect" not in r.stderr
+
+
+def wake_daemon():
+    """Start one throwaway agent to bring the daemon up, then stop it."""
+    if daemon_up():
+        return True
+    print("  daemon down; waking it with one agent", flush=True)
+    subprocess.Popen(
+        ["script", "-q", "/dev/null", "prime-agent", *MODEL, "--cwd", str(ROOT),
+         "Reply with the single word: ready"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+    )
+    for _ in range(30):
+        time.sleep(2)
+        if daemon_up():
+            time.sleep(2)
+            for name, (aid, _) in agents().items():
+                subprocess.run(["prime-agent", "stop", aid], capture_output=True)
+            print("  daemon up", flush=True)
+            return True
+    print("  !! daemon would not start", flush=True)
+    return False
+
+
+def main():
+    if not wake_daemon():
+        sys.exit(2)
+    first = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    last = int(sys.argv[2]) if len(sys.argv) > 2 else max(GRAPH["wave"].values())
+    if not LOG.exists():
+        LOG.write_text("wave\treqs\tstarted\tended\tseconds\tfiles\n")
+    run_start = time.time()
+
+    for w in range(first, last + 1):
+        reqs = sorted(r for r, x in GRAPH["wave"].items() if x == w)
+        reqs = [r for r in reqs if (ROOT / "briefs" / f"req-{r}-red.md").exists()]
+        if not reqs:
+            print(f"wave {w}: nothing to run", flush=True)
+            continue
+
+        print(f"\n=== WAVE {w} — {len(reqs)} requirements: {' '.join(reqs)} ===", flush=True)
+        # the previous wave ended by killing prime-agent outright, daemon included
+        if not wake_daemon():
+            sys.exit(2)
+        start = time.time()
+        for r in reqs:
+            spawn(r)
+        print(f"  spawned {len(reqs)} agents at once", flush=True)
+
+        # Wait for the agents' own completion tokens, not for their process state and not for
+        # the test file. The lead's idea, 2026-08-16, after the state-based check killed agents
+        # mid-write and logged five waves of empty files as successes. An agent writes its token
+        # only after its file is written and run, so the token cannot appear early.
+        done = ROOT / "briefs" / "done"
+        done.mkdir(exist_ok=True)
+        deadline = time.time() + 25 * 60
+        while time.time() < deadline:
+            if all((done / f"req-{r}.done").exists() for r in reqs):
+                break
+            time.sleep(10)
+        else:
+            missing = [r for r in reqs if not (done / f"req-{r}.done").exists()]
+            print(f"  !! wave {w} timed out; no token from: {' '.join(missing)}", flush=True)
+
+        # Belt and braces: a token says the agent thinks it finished; a non-empty file is the
+        # evidence. Neither reads the test content.
+        files = sum(
+            1 for r in reqs
+            if (ROOT / "tests" / "acceptance" / f"req-{r}.test.ts").exists()
+            and (ROOT / "tests" / "acceptance" / f"req-{r}.test.ts").stat().st_size > 0
+        )
+        secs = int(time.time() - start)
+        with LOG.open("a") as fh:
+            fh.write(f"{w}\t{len(reqs)}\t{int(start)}\t{int(time.time())}\t{secs}\t{files}\n")
+        print(f"=== WAVE {w} DONE in {secs//60}m{secs%60:02d}s — {files}/{len(reqs)} files ===", flush=True)
+        kill_everything()
+
+    total = int(time.time() - run_start)
+    print(f"\nRUN COMPLETE: waves {first}-{last} in {total//3600}h{(total%3600)//60:02d}m", flush=True)
+
+
+def _cleanup(*_):
+    print("\ncleaning up: killing prime-agent at the OS level", flush=True)
+    kill_everything()
+    sys.exit(1)
+
+
+if __name__ == "__main__":
+    atexit.register(kill_everything)
+    signal.signal(signal.SIGTERM, _cleanup)
+    signal.signal(signal.SIGINT, _cleanup)
+    main()

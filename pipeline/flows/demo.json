@@ -1,0 +1,16 @@
+{
+  "_what": "Proves the mechanism, not the work. Two stations over the same pass, so a node's second station is handed a reference to the result its first station produced, and the result it writes names that reference as its input.",
+  "start": "make",
+  "stations": {
+    "make": {
+      "pass": "demo",
+      "on_pass": "recheck",
+      "on_fail": { "to": "make", "max_attempts": 2 }
+    },
+    "recheck": {
+      "pass": "demo",
+      "on_pass": null,
+      "on_fail": { "to": "make", "max_attempts": 2 }
+    }
+  }
+}

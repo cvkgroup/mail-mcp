@@ -1,0 +1,11 @@
+{
+  "_what": "The red phase as a one-station flow: one failing test per acceptance criterion, one file per requirement. The simplest flow there is, and the piece longer flows are built from.",
+  "start": "red",
+  "stations": {
+    "red": {
+      "pass": "red",
+      "on_pass": null,
+      "on_fail": { "to": "red", "max_attempts": 2 }
+    }
+  }
+}

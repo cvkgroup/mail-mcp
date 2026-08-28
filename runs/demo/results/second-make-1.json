@@ -1,0 +1,18 @@
+{
+  "attempt": 1,
+  "evidence": "/Volumes/repo 1/mail-mcp/runs/demo/out/make/second.txt",
+  "handoff": "Evidence file complete at runs/demo/out/make/second.txt; next handler may proceed to the recheck station for node second.",
+  "input_ref": [
+    "first-recheck-1.json"
+  ],
+  "node": "second",
+  "read_inputs": [
+    "first-recheck-1.json"
+  ],
+  "rejected_because": null,
+  "seconds": 9,
+  "station": "make",
+  "summary": "Wrote the make evidence file second.txt containing the word 'second' at runs/demo/out/make, then recorded this result object.",
+  "verdict": "pass",
+  "written_by": "worker"
+}

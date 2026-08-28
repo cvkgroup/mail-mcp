@@ -1,0 +1,5 @@
+node	station	attempt	verdict	seconds	result
+first	make	1	pass	6	first-make-1.json
+first	recheck	1	pass	9	first-recheck-1.json
+second	make	1	pass	9	second-make-1.json
+second	recheck	1	pass	9	second-recheck-1.json

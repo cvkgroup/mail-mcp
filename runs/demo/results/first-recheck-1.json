@@ -1,0 +1,18 @@
+{
+  "attempt": 1,
+  "evidence": "/Volumes/repo 1/mail-mcp/runs/demo/out/recheck/first.txt",
+  "handoff": "No handoff needed; recheck evidence file is complete at runs/demo/out/recheck/first.txt.",
+  "input_ref": [
+    "first-make-1.json"
+  ],
+  "node": "first",
+  "read_inputs": [
+    "first-make-1.json"
+  ],
+  "rejected_because": null,
+  "seconds": 9,
+  "station": "recheck",
+  "summary": "Wrote the recheck evidence file first.txt containing the word 'first' at runs/demo/out/recheck, then recorded this result object.",
+  "verdict": "pass",
+  "written_by": "worker"
+}

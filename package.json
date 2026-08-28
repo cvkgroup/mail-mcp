@@ -1,5 +1,5 @@
 {
-  "name": "venus-mail",
+  "name": "agent-mail",
   "version": "1.0.0",
   "description": "MCP server for inter-agent mail routing",
   "type": "module",
@@ -7,8 +7,15 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "sandbox": "bash scripts/safe-shell.sh",
+    "verify-sandbox": "bash scripts/verify-sandbox.sh",
+    "seat-session": "bash scripts/seat-session.sh",
     "dev": "tsx src/index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pipeline": "tsx pipeline/pipeline.ts",
+    "pipeline:check": "tsc -p pipeline/tsconfig.json",
+    "pipeline:test": "vitest run pipeline/",
+    "pipeline:providers": "tsx pipeline/provider-report.ts"
   },
   "keywords": [
     "mcp",

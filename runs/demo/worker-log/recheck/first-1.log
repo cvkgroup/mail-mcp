@@ -1,0 +1,11 @@
+Done. Both deliverables are in place:
+
+1. **Evidence file**: `/Volumes/repo 1/mail-mcp/runs/demo/out/recheck/first.txt` — created its directories and wrote the word `first` (verified content: `'first'`).
+
+2. **Result object**: `/Volumes/repo 1/mail-mcp/runs/demo/staging/first-recheck-1.json` — written last, after the evidence file was complete, with fields:
+   - `summary`: Wrote the recheck evidence file `first.txt` containing "first" at `runs/demo/out/recheck`, then recorded this result object.
+   - `handoff`: No handoff needed; recheck evidence file is complete at `runs/demo/out/recheck/first.txt`.
+   - `read_inputs`: `["first-make-1.json"]` (the handed result object, which confirmed the make station passed with evidence at `runs/demo/out/make/first.txt`).
+   - Plus matching `node: first`, `station: recheck`, `attempt: 1`, `verdict: pass`.
+
+No template parameters in braces were left unfilled in my instructions. Stopping here.

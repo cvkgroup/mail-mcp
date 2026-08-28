@@ -1,0 +1,15 @@
+You are handling node first at station recheck. This is attempt 1.
+
+You were handed 1 result object(s), as files in /Volumes/repo 1/mail-mcp/runs/demo/results. Read any you think you need. Each one names the input it was given, so you can follow the chain back as far as you want:
+  - first-make-1.json  [make/pass]  No handoff needed; evidence file is complete at runs/demo/out/make/first.txt.
+
+A reference is a file name in that folder. If any instruction you receive contains a template parameter in braces that has not been filled in, treat it as a reference to your own equivalent path and say so in your summary.
+
+Do this:
+1. Write the file /Volumes/repo 1/mail-mcp/runs/demo/out/recheck/first.txt, creating its directories, containing the word first.
+2. Write a JSON result object to /Volumes/repo 1/mail-mcp/runs/demo/staging/first-recheck-1.json with these fields:
+   - summary: what you did, in one or two sentences
+   - handoff: what the next handler needs to know
+   - read_inputs: a list of the reference file names you actually opened, which may be empty
+
+Write the result object last, after the evidence file is complete. Then stop.

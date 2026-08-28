@@ -1,5 +1,0 @@
-{"type":"message_index","message":{"id":"b8b14db7-21c3-443c-9342-1e45270f6f59","seq":1,"from":"orch","to":"worker","kind":"request","class":"interrupt","subject":"Fix it","body":"Please fix the failing test.","thread":"b8b14db7-21c3-443c-9342-1e45270f6f59","sent_at":"2026-08-15T08:00:00.000Z","state":"SENT","state_timestamps":{"SENT":"2026-08-15T08:00:00.000Z"},"push_state":"PENDING"},"file_path":"/home/runner/work/mail-mcp/mail-mcp/test-workdir/store/lane-a/1-orch-to-worker-request.md"}
-{"type":"message_push","message_id":"b8b14db7-21c3-443c-9342-1e45270f6f59","push_state":"DELIVERED","at":"2026-08-15T08:00:10.000Z"}
-{"type":"message_state","message_id":"b8b14db7-21c3-443c-9342-1e45270f6f59","state":"DELIVERED","at":"2026-08-15T08:00:10.000Z"}
-{"type":"message_state","message_id":"b8b14db7-21c3-443c-9342-1e45270f6f59","state":"READ","at":"2026-08-15T08:00:20.000Z"}
-{"type":"message_ack","message_id":"b8b14db7-21c3-443c-9342-1e45270f6f59","disposition":"ACTED","note":"Done","at":"2026-08-15T08:00:30.000Z"}

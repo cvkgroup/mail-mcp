@@ -1,0 +1,8 @@
+{
+  "_what": "Two stations, so a node's second station receives a reference to the result its first station produced.",
+  "start": "make",
+  "stations": {
+    "make":  {"pass": "demo-make", "on_pass": "recheck", "on_fail": {"to": "make", "max_attempts": 2}},
+    "recheck": {"pass": "demo-make", "on_pass": null, "on_fail": {"to": "make", "max_attempts": 2}}
+  }
+}

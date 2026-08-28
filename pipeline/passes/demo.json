@@ -1,0 +1,5 @@
+{
+  "_what": "The smallest pass that exercises everything: a worker reads its input references, produces evidence, and writes a result object. Used by both stations of the demo flow.",
+  "evidence": "runs/{flow}/out/{station}/{node}.txt",
+  "prompt": "You are handling node {node} at station {station}. This is attempt {attempt}.\n\n{input}\n\nA reference is a file name in that folder. If any instruction you receive contains a template parameter in braces that has not been filled in, treat it as a reference to your own equivalent path and say so in your summary.\n\nDo this:\n1. Write the file {evidence}, creating its directories, containing the word {node}.\n2. Write a JSON result object to {result_path} with these fields:\n   - summary: what you did, in one or two sentences\n   - handoff: what the next handler needs to know\n   - read_inputs: a list of the reference file names you actually opened, which may be empty\n\nWrite the result object last, after the evidence file is complete. Then stop."
+}

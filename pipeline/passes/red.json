@@ -1,0 +1,16 @@
+{
+  "_what": "Write one failing test per acceptance criterion. The brief carries the requirement in full, the module the test must import, and the rules, so the worker needs no other document.",
+  "_python": "brief_command is the last piece of the old Python tooling still in use. It reads the requirements document and writes one frozen brief per requirement. It has not been ported.",
+  "brief_command": "python3 scripts/make-req-brief.py all",
+  "brief": "briefs/req-{node}-red.md",
+  "evidence": "tests/acceptance/req-{node}.test.ts",
+  "provider": "openrouter",
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "prompt": "Read {brief} and follow it exactly. It is the complete and only instruction: everything you need is in it, including your requirement in full and the module your test must import. Do not open any other document. Do not read any other test file.\n\n{input}\n\nThis is attempt {attempt}. If you were handed any result objects, read them first. A result whose verdict is fail records why it was rejected, and repeating a rejected attempt wastes the attempt.\n\nDo this:\n1. Write your one test file at {evidence}. Its tests must fail, and they must fail because the module they import does not exist yet, not because the test itself is broken.\n2. Write a JSON result object to {result_path} with these fields:\n   - summary: what you wrote, in one or two sentences\n   - handoff: what the next handler needs to know, including the module path your tests import and anything about the requirement that the tests could not express\n\nWrite the result object last, after the test file is complete. Then stop.",
+  "evaluator": {
+    "kind": "command",
+    "run": "npx vitest run '{evidence}'",
+    "expect": "fail",
+    "_why": "A red test must FAIL. Evidence on disk only proves a file was written; running it proves the test does what a red phase is for. expect=fail inverts the exit code."
+  }
+}

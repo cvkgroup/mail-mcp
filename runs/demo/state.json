@@ -1,0 +1,26 @@
+{
+  "first": {
+    "status": "finished",
+    "station": null,
+    "attempts": {
+      "make": 1,
+      "recheck": 1
+    },
+    "input": [
+      "first-recheck-1.json"
+    ],
+    "final": "first-recheck-1.json"
+  },
+  "second": {
+    "status": "finished",
+    "station": null,
+    "attempts": {
+      "make": 1,
+      "recheck": 1
+    },
+    "input": [
+      "second-recheck-1.json"
+    ],
+    "final": "second-recheck-1.json"
+  }
+}

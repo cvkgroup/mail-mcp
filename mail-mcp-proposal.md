@@ -21,7 +21,7 @@ An MCP server moves the rules from prompt text into a tool. The server enforces 
 
 ## 2. The design
 
-One MCP server: **`venus-mail`**. It owns the mailbox. It assigns every field an agent currently computes by hand.
+One MCP server: **`agent-mail`**. It owns the mailbox. It assigns every field an agent currently computes by hand.
 
 ### 2.1 Tools
 
@@ -132,7 +132,7 @@ Keep the closed `kind` list, and let the server reject an unknown kind. The voca
 
 Each contract's correspondence section shrinks to about four lines:
 
-> Use the `venus-mail` MCP server for all correspondence. Call `mail_inbox` at every turn start and after any compaction. Process interrupts first, then when-ready messages, in the order the server returns. Call `mail_ack` on each message with its disposition. Never write mail files by hand.
+> Use the `agent-mail` MCP server for all correspondence. Call `mail_inbox` at every turn start and after any compaction. Process interrupts first, then when-ready messages, in the order the server returns. Call `mail_ack` on each message with its disposition. Never write mail files by hand.
 
 The naming rule, the numbering rule, the collision rule, the `Seen:` rule, the ritual, and the doorbell rules all leave the prompt. That is the context saving. The behavior stays, because the server enforces it.
 

@@ -1,0 +1,7 @@
+Done. Node "make", attempt 1, station complete.
+
+**What I did:**
+1. Created `/Volumes/repo 1/mail-mcp/runs/demo/out/make/first.txt` (with directories) containing the word `first` — verified contents read back as "first".
+2. Wrote the result object to `/runs/demo/staging/first-make-1.json` with summary, handoff, and `read_inputs: []`.
+
+The instructions contained no unfilled `{template}` parameters, so no reference path substitution was needed. The result JSON was written last, after the evidence file was complete, and then I stopped.

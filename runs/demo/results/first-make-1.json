@@ -1,0 +1,14 @@
+{
+  "attempt": 1,
+  "evidence": "/Volumes/repo 1/mail-mcp/runs/demo/out/make/first.txt",
+  "handoff": "No handoff needed; evidence file is complete at runs/demo/out/make/first.txt.",
+  "input_ref": [],
+  "node": "first",
+  "read_inputs": [],
+  "rejected_because": null,
+  "seconds": 6,
+  "station": "make",
+  "summary": "Wrote the evidence file first.txt containing the word 'first' at runs/demo/out/make, then recorded this result object.",
+  "verdict": "pass",
+  "written_by": "worker"
+}

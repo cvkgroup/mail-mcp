@@ -1,0 +1,22 @@
+{
+  "name": "pipeline-engine",
+  "version": "1.0.0",
+  "description": "Move every node of a dependency graph through a flow of specialists",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pipeline": "tsx pipeline.ts",
+    "check": "tsc -p tsconfig.json",
+    "test": "vitest run .",
+    "providers": "tsx provider-report.ts"
+  },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "tsx": "4.23.12",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  }
+}
